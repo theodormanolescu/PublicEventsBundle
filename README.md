@@ -1,4 +1,6 @@
 
+
+[![build status](http://git.dev.elefant.internal/Elefant/PublicEventsBundle/badges/master/build.svg)](http://git.dev.elefant.internal/Elefant/PublicEventsBundle/commits/master)
 [![coverage report](http://git.dev.elefant.internal/Elefant/PublicEventsBundle/badges/master/coverage.svg)](http://git.dev.elefant.internal/Elefant/PublicEventsBundle/commits/master)
 
 # Installation
