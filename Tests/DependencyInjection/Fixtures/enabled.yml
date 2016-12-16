@@ -1,0 +1,4 @@
+imports:
+    - { resource: event_dispatcher.yml }
+
+elefant_public_events:

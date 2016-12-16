@@ -1,0 +1,9 @@
+imports:
+    - { resource: event_dispatcher_and_guzzle.yml }
+
+elefant_public_events:
+    handlers:
+        guzzle_test:
+            type: guzzle
+            config:
+                client: 'guzzle_client'

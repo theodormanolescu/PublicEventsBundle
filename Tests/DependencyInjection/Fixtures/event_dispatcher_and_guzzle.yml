@@ -1,0 +1,5 @@
+services:
+    event_dispatcher:
+        class: Symfony\Component\EventDispatcher\EventDispatcher
+    guzzle_client:
+        class: GuzzleHttp\Client

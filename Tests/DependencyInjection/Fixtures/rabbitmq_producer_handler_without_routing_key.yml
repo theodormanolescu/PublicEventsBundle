@@ -1,0 +1,20 @@
+imports:
+    - { resource: event_dispatcher.yml }
+
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     'host'
+            port:     'port'
+            user:     'user'
+            password: 'password'
+    producers:
+        test_producer:
+            exchange_options: {name: 'test_exchange', type: 'direct'}
+
+elefant_public_events:
+    handlers:
+        producer_test:
+            type: rabbitmq_producer
+            config:
+                producer: 'test_producer'

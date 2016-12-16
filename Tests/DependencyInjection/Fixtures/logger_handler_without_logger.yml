@@ -1,0 +1,11 @@
+imports:
+    - { resource: event_dispatcher.yml }
+
+elefant_public_events:
+    handlers:
+        logger_test_without:
+            type: logger
+            filters:
+                - {name: regex1}
+                - {name: regex2}
+                - {class: ClassName}
