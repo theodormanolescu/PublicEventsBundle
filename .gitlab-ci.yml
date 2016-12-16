@@ -7,4 +7,4 @@ before_script:
 tests:
   stage: test
   script:
-    - ./vendor/phpunit/phpunit/phpunit --coverage-text
+    - ./vendor/phpunit/phpunit/phpunit --coverage-text --color=never
