@@ -1,3 +1,6 @@
+
+[![coverage report](http://git.dev.elefant.internal/Elefant/PublicEventsBundle/badges/master/coverage.svg)](http://git.dev.elefant.internal/Elefant/PublicEventsBundle/commits/master)
+
 # Installation
 
 `composer require elefant/public-events-bundle`
