@@ -1,5 +1,3 @@
-
-
 [![build status](http://git.dev.elefant.internal/Elefant/PublicEventsBundle/badges/master/build.svg)](http://git.dev.elefant.internal/Elefant/PublicEventsBundle/commits/master)
 [![coverage report](http://git.dev.elefant.internal/Elefant/PublicEventsBundle/badges/master/coverage.svg)](http://git.dev.elefant.internal/Elefant/PublicEventsBundle/commits/master)
 
@@ -33,7 +31,7 @@ elefant_public_events:
                 - {class: ClassName}
 ````
 
-## Filters
+# Filters
 Filters implement will decide if an event is public or not.
 Filters can be stacked and the first one that returns `true` on `isPublic` will mark the event as public.
 Currently there are **name**, **class** and **custom** filters.
@@ -45,9 +43,9 @@ If no filters are specified, the handler will handle **all** events. This is the
         - {name: '/.*/'}
 ````
 
-## Handlers
+# Handlers
 
-### Logger handler
+## Logger handler
 Logger handler logs filtered event if you have a registered **logger** service.
 ````yml
 elefant_public_events:
@@ -57,7 +55,7 @@ elefant_public_events:
             type: logger
 ````
 
-### Guzzle handler
+## Guzzle handler
 Guzzle handler will request configured client and uri with filtered events.
 ````yml
 elefant_public_events:
@@ -71,7 +69,7 @@ elefant_public_events:
                 headers: ['extra headers'] #default: []
 ````
 
-### RabbitMq producer handler
+## RabbitMq producer handler
 RabbitMq producer handler will publish filtered events to a RabbitMq exchange with the configured *routing_key*
  ````yml
  elefant_public_events:
