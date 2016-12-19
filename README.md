@@ -1,6 +1,6 @@
 # Installation
 
-`composer require elefant/public-events-bundle`
+`composer require elefantlabs/public-events-bundle`
 
 ````php
 public function registerBundles()
