@@ -7,6 +7,7 @@ use Elefant\PublicEventsBundle\PublicEvents\Filter\FilterInterface;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\GuzzleHandler;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
+use Elefant\PublicEventsBundle\PublicEvents\Handler\RabbitMqProducerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEventDispatcher;
 use Elefant\PublicEventsBundle\PublicEvents\Serializer\PHPSerializer;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -79,7 +80,7 @@ class ElefantPublicEventsExtension extends Extension
             ->setDefault('routing_key', $name);
 
         $producerConfig = $optionsResolver->resolve($config['config']);
-        $handlerDefinition = $this->loadHandler($name, $config, $container, GuzzleHandler::class, $type);
+        $handlerDefinition = $this->loadHandler($name, $config, $container, RabbitMqProducerHandler::class, $type);
         $handlerDefinition->setArguments([new Reference(sprintf('old_sound_rabbit_mq.%s_producer', $producerConfig['producer'])), $producerConfig['routing_key']]);
 
         return $handlerDefinition;
