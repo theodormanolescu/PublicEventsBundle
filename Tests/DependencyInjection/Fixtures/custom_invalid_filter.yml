@@ -1,0 +1,9 @@
+imports:
+    - { resource: event_dispatcher_and_logger_and_custom_invalid_filter.yml }
+
+elefant_public_events:
+    handlers:
+        logger_test:
+            type: logger
+            filters:
+                - custom_filter
