@@ -1,5 +1,5 @@
 {
-    "name": "elefant/public-events-bundle",
+    "name": "elefantlabs/public-events-bundle",
     "type": "Symfony bundle",
     "autoload":{
         "psr-4": {"Elefant\\PublicEventsBundle\\": ""},
