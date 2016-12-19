@@ -35,13 +35,25 @@ elefant_public_events:
 Filters implement will decide if an event is public or not.
 Filters can be stacked and the first one that returns `true` on `isPublic` will mark the event as public.
 Currently there are **name**, **class** and **custom** filters.
-A filter should implement `Elefant\PublicEventsBundle\PublicEvents\Filter\FilterInterface`.
 
 If no filters are specified, the handler will handle **all** events. This is the equivalent to
 ````yml
     filters:
         - {name: '/.*/'}
 ````
+
+custom filter example:
+````
+elefant_public_events:
+    handlers:
+        logger_test:
+            type: logger
+            filters:
+                - custom_filter
+````
+
+Where **custom_filter** is the service Id of your custom filter.
+A filter should implement `Elefant\PublicEventsBundle\PublicEvents\Filter\FilterInterface`.
 
 # Handlers
 

@@ -6,21 +6,17 @@ use Elefant\PublicEventsBundle\DependencyInjection\ElefantPublicEventsExtension;
 use Elefant\PublicEventsBundle\ElefantPublicEventsBundle;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\ClassFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
-use Elefant\PublicEventsBundle\PublicEvents\Handler\EventTransformerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEventDispatcher;
 use Elefant\PublicEventsBundle\PublicEvents\Serializer\PHPSerializer;
-use GuzzleHttp\Client;
 use OldSound\RabbitMqBundle\DependencyInjection\OldSoundRabbitMqExtension;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\CodeCoverage\Report\PHP;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class ElefantPublicEventsExtensionTest extends TestCase
 {
@@ -71,7 +67,7 @@ class ElefantPublicEventsExtensionTest extends TestCase
 
         $this->assertEquals(
             [
-                ['setSerializer', [new Definition(PHPSerializer::class, [])]],
+                ['setSerializer', [new Definition(PHPSerializer::class)]],
                 ['addFilter', [new Definition(NameFilter::class, ['regex1'])]],
                 ['addFilter', [new Definition(NameFilter::class, ['regex2'])]],
                 ['addFilter', [new Definition(ClassFilter::class, ['ClassName'])]],
@@ -128,6 +124,7 @@ class ElefantPublicEventsExtensionTest extends TestCase
             $producerHandler->getArguments()
         );
     }
+
     public function testRabbitMqProducerWithoutRoutingKey()
     {
         $container = $this->createContainer('rabbitmq_producer_handler_without_routing_key.yml', [new OldSoundRabbitMqExtension()]);
@@ -143,7 +140,32 @@ class ElefantPublicEventsExtensionTest extends TestCase
         );
     }
 
-    private function createContainer($file, $extensions = [], $bundles = [])
+    public function testCustomFilter()
+    {
+        $container = $this->createContainer('custom_filter.yml');
+
+        /** @var Definition $loggerHandler */
+        $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
+
+        $this->assertEquals(
+            [
+                ['setSerializer', [new Definition(PHPSerializer::class)]],
+                ['addFilter', [new Reference('custom_filter')]],
+            ],
+            $loggerHandler->getMethodCalls()
+        );
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid filter class \stdClass, a filter must implement Elefant\PublicEventsBundle\PublicEvents\Filter\FilterInterface
+     */
+    public function testCustomInvalidFilter()
+    {
+        $this->createContainer('custom_invalid_filter.yml');
+    }
+
+    private function createContainer($file, $extensions = [])
     {
         $container = new ContainerBuilder(new ParameterBag(array('kernel.debug' => false)));
 

@@ -3,6 +3,7 @@
 namespace Elefant\PublicEventsBundle\DependencyInjection;
 
 use Elefant\PublicEventsBundle\PublicEvents\Filter\ClassFilter;
+use Elefant\PublicEventsBundle\PublicEvents\Filter\FilterInterface;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\GuzzleHandler;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
@@ -96,6 +97,9 @@ class ElefantPublicEventsExtension extends Extension
         }
 
         foreach ($config['filters'] as $index => $filter) {
+            if (is_string($filter)) {
+                $handlerDefinition->addMethodCall('addFilter', [new Reference($filter)]);
+            }
             if (!empty($filter['name'])) {
                 $filterDefinition = $container
                     ->register(sprintf('elefant.public_events.%s_%s_name_filter', $name, $index), NameFilter::class)
