@@ -5,7 +5,7 @@ env:
   - SYMFONY_VERSION="dev-master"
 
 install:
-   - composer require symfony/dependency-injection:${SYMFONY_VERSION} symfony/event-dispatcher:${SYMFONY_VERSION} symfony/http-kernel:${SYMFONY_VERSION} symfony/serializer:${SYMFONY_VERSION} symfony/options-resolver:${SYMFONY_VERSION}
+   - composer require --no-update symfony/framework-bundle "${SYMFONY_VERSION}"
 
 language: php
 php:
@@ -13,10 +13,21 @@ php:
   - '7.0'
   - '7.1'
   - hhvm
-  - nightly
+
+matrix:
+  include:
+    - php: 5.6
+      env: deps=low
+    - php: 7.0
+      env: deps=low
+
+env:
+  global:
+    - deps=no
 
 install:
-  - composer install --dev
+  - if [ "$deps" = "no" ]; then composer install; fi;
+  - if [ "$deps" = "low" ]; then composer --prefer-lowest; fi;
 
 script:
   - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
