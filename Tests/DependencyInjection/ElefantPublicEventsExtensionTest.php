@@ -6,6 +6,7 @@ use Elefant\PublicEventsBundle\DependencyInjection\ElefantPublicEventsExtension;
 use Elefant\PublicEventsBundle\ElefantPublicEventsBundle;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\ClassFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
+use Elefant\PublicEventsBundle\PublicEvents\Formatter\ArrayFormatter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEventDispatcher;
 use Elefant\PublicEventsBundle\PublicEvents\Serializer\NoopSerializer;
@@ -58,19 +59,20 @@ class ElefantPublicEventsExtensionTest extends TestCase
         $this->assertEquals(LoggerHandler::class, $loggerHandler->getClass());
     }
 
-    public function testSerializerAndFiltersAreSet()
+    public function testFormatterAndFiltersAreSet()
     {
         $container = $this->createContainer('logger_handler_with_logger.yml');
 
         /** @var Definition $loggerHandler */
         $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
 
-        $this->assertArraySubset(
+        $this->assertEquals(
             [
-                ['setSerializer', [new Definition(NoopSerializer::class)]],
+                ['setFormatter', [new Definition(ArrayFormatter::class)]],
                 ['addFilter', [new Definition(NameFilter::class, ['regex1'])]],
                 ['addFilter', [new Definition(NameFilter::class, ['regex2'])]],
                 ['addFilter', [new Definition(ClassFilter::class, ['ClassName'])]],
+                ['setLogger', [new Reference('logger')]],
             ],
             $loggerHandler->getMethodCalls()
         );
@@ -147,10 +149,11 @@ class ElefantPublicEventsExtensionTest extends TestCase
         /** @var Definition $loggerHandler */
         $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
 
-        $this->assertArraySubset(
+        $this->assertEquals(
             [
-                ['setSerializer', [new Definition(NoopSerializer::class)]],
+                ['setFormatter', [new Definition(ArrayFormatter::class)]],
                 ['addFilter', [new Reference('custom_filter')]],
+                ['setLogger', [new Reference('logger')]],
             ],
             $loggerHandler->getMethodCalls()
         );
@@ -163,6 +166,23 @@ class ElefantPublicEventsExtensionTest extends TestCase
     public function testCustomInvalidFilter()
     {
         $this->createContainer('custom_invalid_filter.yml');
+    }
+
+    public function testCustomFormatter()
+    {
+        $container = $this->createContainer('custom_formatter.yml');
+
+        /** @var Definition $loggerHandler */
+        $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
+
+        $this->assertEquals(
+            [
+                ['setFormatter', [new Reference('custom_formatter')]],
+                ['addFilter', [new Definition(NameFilter::class, ['/.*/'])]],
+                ['setLogger', [new Reference('logger')]],
+            ],
+            $loggerHandler->getMethodCalls()
+        );
     }
 
     private function createContainer($file, $extensions = [])

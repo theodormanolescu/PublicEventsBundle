@@ -8,22 +8,22 @@ class RabbitMqProducerHandler extends Handler
 {
     /** @var  ProducerInterface */
     private $producer;
+    /** @var  string */
+    private $routingKey;
 
     /**
+     * RabbitMqProducerHandler constructor.
      * @param ProducerInterface $producer
+     * @param $routingKey
      */
-    public function __construct(ProducerInterface $producer)
+    public function __construct(ProducerInterface $producer, $routingKey)
     {
         $this->producer = $producer;
+        $this->routingKey = $routingKey;
     }
 
-    protected function doHandle($eventName, $formattedEvent)
+    protected function doHandle($message)
     {
-        $this->producer->publish($formattedEvent, $eventName);
-    }
-
-    protected function format($eventName, $serializedEvent)
-    {
-        return json_encode(['event_name' => $eventName, 'event' => $serializedEvent]);
+        $this->producer->publish($message, $this->routingKey);
     }
 }

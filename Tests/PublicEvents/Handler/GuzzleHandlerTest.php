@@ -2,6 +2,7 @@
 
 namespace Elefant\PublicEventsBundle\Tests\PublicEvents\Handler;
 
+use Elefant\PublicEventsBundle\PublicEvents\Formatter\FormatterInterface;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\GuzzleHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 use GuzzleHttp\ClientInterface;
@@ -21,11 +22,12 @@ class GuzzleHandlerTest extends TestCase
                 return
                     $request->getMethod() === 'GET' &&
                     (string)$request->getUri() === '/test_api' &&
-                    (string)$request->getBody() === '{"event_name":"test_event","event":"serialized body"}';
+                    (string)$request->getBody() === 'formatted';
             }));
 
         $guzzleHandler = new GuzzleHandler($client, 'get', '/test_api');
-        HandlerMocker::addAllFilterAndSerializer($this, $guzzleHandler);
+        HandlerMocker::addFilterAndJsonFormatter($guzzleHandler);
+        $guzzleHandler->setFormatter(HandlerMocker::getMockFormatter($this, 'formatted'));
         $guzzleHandler->handle(new PublicEvent('test_event', new Event()));
     }
 }

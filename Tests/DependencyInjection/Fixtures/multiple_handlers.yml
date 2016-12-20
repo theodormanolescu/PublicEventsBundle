@@ -2,6 +2,7 @@ imports:
     - { resource: event_dispatcher_and_logger.yml }
 
 elefant_public_events:
+    formatter: array
     handlers:
         name_logger:
             type: logger

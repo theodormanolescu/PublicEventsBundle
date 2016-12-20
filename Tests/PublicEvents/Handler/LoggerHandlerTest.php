@@ -3,6 +3,8 @@
 namespace Elefant\PublicEventsBundle\Tests\PublicEvents\Handler;
 
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
+use Elefant\PublicEventsBundle\PublicEvents\Formatter\ArrayFormatter;
+use Elefant\PublicEventsBundle\PublicEvents\Formatter\FormatterInterface;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 use PHPUnit\Framework\TestCase;
@@ -21,22 +23,15 @@ class LoggerHandlerTest extends TestCase
         $logger->expects($this->once())->method('log')->with(
             'info',
             'public_event',
-            ['event_name' => 'name', 'event' => 'serialized_event']
+            ['formatted']
         );
 
-        $serializer = $this->getMockBuilder(SerializerInterface::class)->getMock();
-        $serializer->expects($this->once())
-            ->method('serialize')
-            ->with($event)
-            ->willReturn('serialized_event');
-        
         $filter = new NameFilter('/name/');
-        
+
 
         $loggerHandler
             ->setLogger($logger)
-            ->setSerializer($serializer)
-            ->setSerializingFormat('php')
+            ->setFormatter(HandlerMocker::getMockFormatter($this, ['formatted']))
             ->addFilter($filter);
 
         $loggerHandler->handle(new PublicEvent('name', $event));
@@ -66,7 +61,7 @@ class LoggerHandlerTest extends TestCase
 
         $loggerHandler
             ->addFilter($filter)
-            ->setSerializer($this->getMockBuilder(SerializerInterface::class)->getMock());
+            ->setFormatter(new ArrayFormatter());
 
         $loggerHandler->handle(new PublicEvent('name', $event));
     }

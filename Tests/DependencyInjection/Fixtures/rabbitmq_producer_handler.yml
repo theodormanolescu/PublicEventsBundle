@@ -13,6 +13,7 @@ old_sound_rabbit_mq:
             exchange_options: {name: 'test_exchange', type: 'direct'}
 
 elefant_public_events:
+    formatter: array
     handlers:
         producer_test:
             type: rabbitmq_producer

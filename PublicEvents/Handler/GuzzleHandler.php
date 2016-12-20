@@ -31,14 +31,9 @@ class GuzzleHandler extends Handler
     }
 
 
-    protected function doHandle($eventName, $formattedEvent)
+    protected function doHandle($data)
     {
-        $request = new Request($this->method, $this->uri, $this->headers, $formattedEvent);
+        $request = new Request($this->method, $this->uri, $this->headers, $data);
         $this->client->send($request);
-    }
-
-    protected function format($eventName, $serializedEvent)
-    {
-        return json_encode(['event_name' => $eventName, 'event' => $serializedEvent]);
     }
 }

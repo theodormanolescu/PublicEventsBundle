@@ -22,16 +22,11 @@ class LoggerHandler extends Handler
         $this->logMessage = $logMessage;
     }
 
-    protected function doHandle($eventName, $data)
+    protected function doHandle($logContext)
     {
         if ($this->logger) {
-            $this->logger->log($this->level, $this->logMessage, $data);
+            $this->logger->log($this->level, $this->logMessage, $logContext);
         }
-    }
-
-    protected function format($eventName, $serializedEvent)
-    {
-        return ['event_name' => $eventName, 'event' => $serializedEvent];
     }
 
     public function setLogger($logger)

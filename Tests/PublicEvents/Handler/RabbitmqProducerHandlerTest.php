@@ -16,10 +16,11 @@ class RabbitmqProducerHandlerTest extends TestCase
 
         $producer->expects($this->once())
             ->method('publish')
-            ->with('{"event_name":"test_event","event":"serialized body"}','test_event');
+            ->with('message','routing_key');
 
-        $producerHandler = new RabbitMqProducerHandler($producer);
-        HandlerMocker::addAllFilterAndSerializer($this, $producerHandler);
+        $producerHandler = new RabbitMqProducerHandler($producer, 'routing_key');
+        HandlerMocker::addFilterAndJsonFormatter($producerHandler);
+        $producerHandler->setFormatter(HandlerMocker::getMockFormatter($this, 'message'));
 
         $producerHandler->handle(new PublicEvent('test_event', new Event()));
     }
