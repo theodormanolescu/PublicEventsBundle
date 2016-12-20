@@ -22,7 +22,7 @@ class ClassFilter implements FilterInterface
      * @param Event|null $event
      * @return boolean
      */
-    public function isPublic($eventName, Event $event = null)
+    public function isPublic($eventName, Event $event)
     {
         return $event instanceof $this->className;
     }

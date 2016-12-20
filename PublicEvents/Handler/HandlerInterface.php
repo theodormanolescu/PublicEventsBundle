@@ -2,9 +2,9 @@
 
 namespace Elefant\PublicEventsBundle\PublicEvents\Handler;
 
-use Symfony\Component\EventDispatcher\Event;
+use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 
 interface HandlerInterface
 {
-    public function handle($eventName, Event $event = null);
+    public function handle(PublicEvent $event);
 }

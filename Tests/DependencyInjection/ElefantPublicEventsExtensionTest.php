@@ -8,7 +8,7 @@ use Elefant\PublicEventsBundle\PublicEvents\Filter\ClassFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEventDispatcher;
-use Elefant\PublicEventsBundle\PublicEvents\Serializer\PHPSerializer;
+use Elefant\PublicEventsBundle\PublicEvents\Serializer\NoopSerializer;
 use OldSound\RabbitMqBundle\DependencyInjection\OldSoundRabbitMqExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\FileLocator;
@@ -65,9 +65,9 @@ class ElefantPublicEventsExtensionTest extends TestCase
         /** @var Definition $loggerHandler */
         $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
 
-        $this->assertEquals(
+        $this->assertArraySubset(
             [
-                ['setSerializer', [new Definition(PHPSerializer::class)]],
+                ['setSerializer', [new Definition(NoopSerializer::class)]],
                 ['addFilter', [new Definition(NameFilter::class, ['regex1'])]],
                 ['addFilter', [new Definition(NameFilter::class, ['regex2'])]],
                 ['addFilter', [new Definition(ClassFilter::class, ['ClassName'])]],
@@ -147,9 +147,9 @@ class ElefantPublicEventsExtensionTest extends TestCase
         /** @var Definition $loggerHandler */
         $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
 
-        $this->assertEquals(
+        $this->assertArraySubset(
             [
-                ['setSerializer', [new Definition(PHPSerializer::class)]],
+                ['setSerializer', [new Definition(NoopSerializer::class)]],
                 ['addFilter', [new Reference('custom_filter')]],
             ],
             $loggerHandler->getMethodCalls()

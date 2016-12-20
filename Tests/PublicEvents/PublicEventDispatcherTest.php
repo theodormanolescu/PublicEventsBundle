@@ -17,7 +17,8 @@ class PublicEventDispatcherTest extends TestCase
         $eventDispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
         $eventDispatcher->expects($this->at(1))
             ->method('dispatch')
-            ->with('elefant.public_event', new PublicEvent('test_event', new Event()));
+            ->with('elefant.public_event', new PublicEvent('test_event', new Event()))
+            ->willReturn(new Event());
 
         $publicEventDispatcher = new PublicEventDispatcher($eventDispatcher);
 

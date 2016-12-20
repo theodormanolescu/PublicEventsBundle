@@ -32,11 +32,12 @@ class PublicEventDispatcher implements EventDispatcherInterface
 
     public function dispatch($eventName, Event $event = null)
     {
-        $return = $this->eventDispatcher->dispatch($eventName, $event);
-        if (!$event instanceof PublicEvent) {
-            $this->eventDispatcher->dispatch('elefant.public_event', new PublicEvent($eventName, $event));
+        $event = $this->eventDispatcher->dispatch($eventName, $event);
+        if (!$event) {
+            $event = new Event();
         }
-        return $return;
+        $this->eventDispatcher->dispatch('elefant.public_event', new PublicEvent($eventName, $event));
+        return $event;
     }
 
     public function addListener($eventName, $listener, $priority = 0)

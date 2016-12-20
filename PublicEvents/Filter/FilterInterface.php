@@ -11,5 +11,5 @@ interface FilterInterface
      * @param Event|null $event
      * @return boolean
      */
-    public function isPublic($eventName, Event $event = null);
+    public function isPublic($eventName, Event $event);
 }

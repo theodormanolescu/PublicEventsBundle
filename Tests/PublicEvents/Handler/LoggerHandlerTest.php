@@ -4,6 +4,7 @@ namespace Elefant\PublicEventsBundle\Tests\PublicEvents\Handler;
 
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
+use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Event;
@@ -38,7 +39,7 @@ class LoggerHandlerTest extends TestCase
             ->setSerializingFormat('php')
             ->addFilter($filter);
 
-        $loggerHandler->handle('name', $event);
+        $loggerHandler->handle(new PublicEvent('name', $event));
     }
 
     public function testCannotHandle()
@@ -54,7 +55,7 @@ class LoggerHandlerTest extends TestCase
             ->setLogger($logger)
             ->addFilter($filter);
 
-        $loggerHandler->handle('matches?', new Event());
+        $loggerHandler->handle(new PublicEvent('matches?', new Event()));
     }
 
     public function testCannotHandleWithoutLogger()
@@ -67,6 +68,6 @@ class LoggerHandlerTest extends TestCase
             ->addFilter($filter)
             ->setSerializer($this->getMockBuilder(SerializerInterface::class)->getMock());
 
-        $loggerHandler->handle('name', $event);
+        $loggerHandler->handle(new PublicEvent('name', $event));
     }
 }

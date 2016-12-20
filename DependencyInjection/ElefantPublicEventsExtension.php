@@ -9,7 +9,7 @@ use Elefant\PublicEventsBundle\PublicEvents\Handler\GuzzleHandler;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\RabbitMqProducerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEventDispatcher;
-use Elefant\PublicEventsBundle\PublicEvents\Serializer\PHPSerializer;
+use Elefant\PublicEventsBundle\PublicEvents\Serializer\NoopSerializer;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -50,7 +50,8 @@ class ElefantPublicEventsExtension extends Extension
 
     private function loadLoggerHandler($name, array $config, ContainerBuilder $container, $type)
     {
-        return $this->loadHandler($name, $config, $container, LoggerHandler::class, $type);
+        $handlerDefinition = $this->loadHandler($name, $config, $container, LoggerHandler::class, $type);
+        $handlerDefinition->addMethodCall('setLogger', [new Reference('logger')]);
     }
 
     private function loadGuzzleHandler($name, array $config, ContainerBuilder $container, $type)
@@ -90,7 +91,7 @@ class ElefantPublicEventsExtension extends Extension
     {
         $handlerDefinition = $container
             ->register(sprintf('elefant.public_events.%s_handler', $name), $handlerClass)
-            ->addMethodCall('setSerializer', [new Definition(PHPSerializer::class)])
+            ->addMethodCall('setSerializer', [new Definition(NoopSerializer::class)])
             ->addTag('elefant.public_events.handler', ['type' => $type]);
 
         if (!isset($config['filters'])) {

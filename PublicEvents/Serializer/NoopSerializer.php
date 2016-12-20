@@ -4,7 +4,7 @@ namespace Elefant\PublicEventsBundle\PublicEvents\Serializer;
 
 use Symfony\Component\Serializer\SerializerInterface;
 
-class PHPSerializer implements SerializerInterface
+class NoopSerializer implements SerializerInterface
 {
 
     /**
@@ -18,7 +18,7 @@ class PHPSerializer implements SerializerInterface
      */
     public function serialize($data, $format, array $context = array())
     {
-        return serialize($data);
+        return $data;
     }
 
     /**
@@ -33,6 +33,6 @@ class PHPSerializer implements SerializerInterface
      */
     public function deserialize($data, $type, $format, array $context = array())
     {
-        return unserialize($data);
+        return $data;
     }
 }

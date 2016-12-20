@@ -3,6 +3,7 @@
 namespace Elefant\PublicEventsBundle\Tests\PublicEvents\Handler;
 
 use Elefant\PublicEventsBundle\PublicEvents\Handler\RabbitMqProducerHandler;
+use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\Event;
@@ -20,6 +21,6 @@ class RabbitmqProducerHandlerTest extends TestCase
         $producerHandler = new RabbitMqProducerHandler($producer);
         HandlerMocker::addAllFilterAndSerializer($this, $producerHandler);
 
-        $producerHandler->handle('test_event', new Event());
+        $producerHandler->handle(new PublicEvent('test_event', new Event()));
     }
 }

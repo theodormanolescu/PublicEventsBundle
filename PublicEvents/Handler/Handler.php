@@ -3,6 +3,7 @@
 namespace Elefant\PublicEventsBundle\PublicEvents\Handler;
 
 use Elefant\PublicEventsBundle\PublicEvents\Filter\FilterInterface;
+use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -25,23 +26,23 @@ abstract class Handler implements HandlerInterface
         return $this;
     }
 
-    private function canHandle($eventName, Event $event = null)
+    private function canHandle(PublicEvent $event)
     {
         foreach ($this->filters as $filter) {
-            if ($filter->isPublic($eventName, $event)) {
+            if ($filter->isPublic($event->getOriginalEventName(), $event->getOriginalEvent())) {
                 return true;
             }
         }
         return false;
     }
 
-    public function handle($eventName, Event $event = null)
+    public function handle(PublicEvent $event)
     {
-        if (!$this->canHandle($eventName, $event)) {
+        if (!$this->canHandle($event)) {
             return;
         }
-        $formatted = $this->format($eventName, $this->serializer->serialize($event, $this->serializingFormat));
-        $this->doHandle($eventName, $formatted);
+        $formatted = $this->format($event->getOriginalEventName(), $this->serializer->serialize($event->getOriginalEvent(), $this->serializingFormat));
+        $this->doHandle($event->getOriginalEventName(), $formatted);
     }
 
     public function setSerializer(SerializerInterface $serializer)

@@ -3,6 +3,7 @@
 namespace Elefant\PublicEventsBundle\Tests\PublicEvents\Handler;
 
 use Elefant\PublicEventsBundle\PublicEvents\Handler\GuzzleHandler;
+use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use PHPUnit\Framework\TestCase;
@@ -25,6 +26,6 @@ class GuzzleHandlerTest extends TestCase
 
         $guzzleHandler = new GuzzleHandler($client, 'get', '/test_api');
         HandlerMocker::addAllFilterAndSerializer($this, $guzzleHandler);
-        $guzzleHandler->handle('test_event', new Event());
+        $guzzleHandler->handle(new PublicEvent('test_event', new Event()));
     }
 }
