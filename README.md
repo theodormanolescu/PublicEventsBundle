@@ -43,7 +43,7 @@ elefant_public_events:
              type: rabbitmq_producer #producer name in old_sound_rabbit_mq.producers
              config:
                  producer: 'test_producer'
-                 routing_key: test_routing_key # default: current handler name (producer_test in this example)
+                 routing_key: test_routing_key # default: current handler name
              formatter: array                   
 ````
 
@@ -54,12 +54,12 @@ Currently there are **name**, **class** and **custom** filters.
 
 If no filters are specified, the handler will handle **all** events. This is the equivalent to
 ````yml
-    filters:
-        - {name: '/.*/'}
+filters:
+    - {name: '/.*/'}
 ````
 
 A filter should implement `Elefant\PublicEventsBundle\PublicEvents\Filter\FilterInterface`.
 
 # Formatters
-A formatter transform a `Elefant\PublicEventsBundle\PublicEvents\PublicEvent` object befor handing it to `Handler::doHandle`. 
+A formatter transforms a `Elefant\PublicEventsBundle\PublicEvents\PublicEvent` object befor handing it to `Handler::doHandle`. 
 There are an **array** and **json** formatters and you can define your own formatters implementing `Elefant\PublicEventsBundle\PublicEvents\Formatter\FormatterInterface`.
