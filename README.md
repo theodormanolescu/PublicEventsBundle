@@ -47,6 +47,15 @@ elefant_public_events:
              formatter: array                   
 ````
 
+# Handlers
+
+Handlers process public events. Supported handlers:
+
+- LoggerHandler uses [Monolog](https://github.com/Seldaek/monolog) (supports a [psr-log](https://github.com/php-fig/log) `LoggerInterface`)
+- GuzzleHandler uses [Guzzle](https://github.com/guzzle/guzzle)
+- RabbitmqProducerHandler uses [RabbitMqBundle](https://github.com/php-amqplib/RabbitMqBundle)
+- Custom handlers should implement `Elefant\PublicEventsBundle\PublicEvents\Handler\HandlerInterface`
+
 # Filters
 Filters which event you want to make public.
 Filters can be stacked and the first one that returns `true` on `isPublic` will mark the event as public.

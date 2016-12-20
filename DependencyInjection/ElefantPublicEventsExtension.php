@@ -93,7 +93,7 @@ class ElefantPublicEventsExtension extends Extension
             ->register(sprintf('elefant.public_events.%s_handler', $name), $handlerClass)
             ->addTag('elefant.public_events.handler', ['type' => $type]);
 
-        $this->setFormatter($config, $handlerDefinition, $defaultFormatter);
+        $this->setFormatter($name, $config, $handlerDefinition, $defaultFormatter);
 
         $this->addFilters($name, $config, $handlerDefinition, $container);
 
@@ -101,7 +101,7 @@ class ElefantPublicEventsExtension extends Extension
         return $handlerDefinition;
     }
 
-    private function setFormatter(array $config, Definition $handlerDefinition, $defaultFormatter)
+    private function setFormatter($name, array $config, Definition $handlerDefinition, $defaultFormatter)
     {
         if (isset($config['formatter'])) {
             $defaultFormatter = $config['formatter'];
