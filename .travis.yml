@@ -1,0 +1,22 @@
+env:
+  - SYMFONY_VERSION="2.7.*"
+  - SYMFONY_VERSION="2.8.*"
+  - SYMFONY_VERSION="3.*"
+  - SYMFONY_VERSION="dev-master"
+
+install:
+   - composer require symfony/dependency-injection:${SYMFONY_VERSION} symfony/event-dispatcher:${SYMFONY_VERSION} symfony/http-kernel:${SYMFONY_VERSION} symfony/serializer:${SYMFONY_VERSION} symfony/options-resolver:${SYMFONY_VERSION}
+
+language: php
+php:
+  - '5.6'
+  - '7.0'
+  - '7.1'
+  - hhvm
+  - nightly
+
+install:
+  - composer install
+
+script:
+  - vendor/bin/phpunit
