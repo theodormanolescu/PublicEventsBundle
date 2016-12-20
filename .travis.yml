@@ -27,7 +27,7 @@ env:
 
 install:
   - if [ "$deps" = "no" ]; then composer install; fi;
-  - if [ "$deps" = "low" ]; then composer --prefer-lowest; fi;
+  - if [ "$deps" = "low" ]; then composer update --prefer-lowest; fi;
 
 script:
   - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
