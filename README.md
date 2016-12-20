@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/ElefantLabs/PublicEventsBundle.svg?branch=master)](https://travis-ci.org/ElefantLabs/PublicEventsBundle)
+[![Coverage Status](https://coveralls.io/repos/github/ElefantLabs/PublicEventsBundle/badge.svg?branch=master)](https://coveralls.io/github/ElefantLabs/PublicEventsBundle?branch=master)
+
 # Installation
 
 `composer require elefantlabs/public-events-bundle`

@@ -19,4 +19,7 @@ install:
   - composer install
 
 script:
-  - vendor/bin/phpunit
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+
+after_success:
+  - vendor/bin/coveralls -v --exclude-no-stmt
