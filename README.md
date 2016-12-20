@@ -1,6 +1,13 @@
 [![Build Status](https://travis-ci.org/ElefantLabs/PublicEventsBundle.svg?branch=master)](https://travis-ci.org/ElefantLabs/PublicEventsBundle)
 [![Coverage Status](https://coveralls.io/repos/github/ElefantLabs/PublicEventsBundle/badge.svg?branch=master)](https://coveralls.io/github/ElefantLabs/PublicEventsBundle?branch=master)
 
+
+|  |  | |
+| ------------- |-------------| -----|
+| You choose how you want to make your events public|you choose which events to make public | and how to transform them|
+| you define a [Handler](#handlers)      | You define [filters](#filters)      |   You define a [foramtter](#filters) |
+
+
 # Installation
 
 `composer require elefantlabs/public-events-bundle`
