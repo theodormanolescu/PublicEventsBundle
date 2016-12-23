@@ -13,10 +13,11 @@ use Elefant\PublicEventsBundle\PublicEvents\PublicEventDispatcher;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ElefantPublicEventsExtension extends Extension
+class ElefantPublicEventsExtension extends Extension implements PrependExtensionInterface
 {
 
     public function load(array $configs, ContainerBuilder $container)
@@ -74,15 +75,21 @@ class ElefantPublicEventsExtension extends Extension
 
     private function loadRabbitMqProducerHandler($name, array $config, ContainerBuilder $container, $type, $defaultFormatter)
     {
+
+        $container->setParameter('elefant.public_events.has_rabbitmq_handler', true);
         $optionsResolver = new OptionsResolver();
 
-        $optionsResolver
-            ->setRequired('producer')
-            ->setDefault('routing_key', $name);
+        $config['config'] = $optionsResolver
+            ->setDefault('connection', 'default')
+            ->setDefault('routing_key', $name)
+            ->setDefault('exchange_options', ['name' => 'public_events', 'type' => 'direct'])
+            ->setDefault('queue_options', [])
+            ->setRequired('callback')
+            ->resolve($config['config']);
 
-        $producerConfig = $optionsResolver->resolve($config['config']);
         $handlerDefinition = $this->loadHandler($name, $config, $container, RabbitMqProducerHandler::class, $type, $defaultFormatter);
-        $handlerDefinition->setArguments([new Reference(sprintf('old_sound_rabbit_mq.%s_producer', $producerConfig['producer'])), $producerConfig['routing_key']]);
+        $handlerDefinition->clearTag('elefant.public_events.handler');
+        $handlerDefinition->addTag('elefant.public_events.handler', ['name' => $name, 'type' => $type, 'routing_key' => $config['config']['routing_key']]);
 
         return $handlerDefinition;
     }
@@ -146,6 +153,44 @@ class ElefantPublicEventsExtension extends Extension
                     ->register(sprintf('elefant.public_events.%s_%s_class_filter', $name, $index), ClassFilter::class)
                     ->setArguments([$filter['class']]);
                 $handlerDefinition->addMethodCall('addFilter', [$filterDefinition]);
+            }
+        }
+    }
+
+    /**
+     * Allow an extension to prepend the extension configurations.
+     *
+     * @param ContainerBuilder $container
+     */
+    public function prepend(ContainerBuilder $container)
+    {
+        $config = $this->processConfiguration(new Configuration(), $container->getExtensionConfig('elefant_public_events'));
+        if (!empty($config['handlers'])) {
+            foreach ($config['handlers'] as $name => $handler) {
+                if (!isset($handler['config']['queue_options']['name'])) {
+                    $handler['config']['queue_options']['name'] = $handler['config']['exchange_options']['name'] . '.' . $name;
+                }
+                if (!isset($handler['config']['queue_options']['routing_keys'])) {
+                    $handler['config']['queue_options']['routing_keys'] = [$name];
+                }
+                $container->prependExtensionConfig('old_sound_rabbit_mq', [
+                        'producers' => [
+                            sprintf('public_events_%s', $name) => [
+                                'connection' => $handler['config']['connection'],
+                                'exchange_options' => $handler['config']['exchange_options']
+                            ]
+                        ],
+                        'consumers' => [
+                            sprintf('public_events_%s', $name) => [
+                                'connection' => $handler['config']['connection'],
+                                'exchange_options' => $handler['config']['exchange_options'],
+                                'queue_options' => $handler['config']['queue_options'],
+                                'callback' => $handler['config']['callback'],
+                            ]
+                        ]
+                    ]
+                );
+
             }
         }
     }

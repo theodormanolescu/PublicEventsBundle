@@ -1,0 +1,19 @@
+imports:
+    - { resource: services/event_dispatcher.yml }
+
+old_sound_rabbit_mq:
+    connections:
+        custom:
+            host:     'host'
+            port:     'port'
+            user:     'user'
+            password: 'password'
+
+elefant_public_events:
+    formatter: array
+    handlers:
+        producer_test:
+            type: rabbitmq_producer
+            config:
+                connection: custom
+                callback: event_dispatcher

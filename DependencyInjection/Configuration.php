@@ -5,6 +5,7 @@ namespace Elefant\PublicEventsBundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class Configuration implements ConfigurationInterface
 {
@@ -26,11 +27,29 @@ class Configuration implements ConfigurationInterface
                     ->booleanNode('enabled')->defaultTrue()->end()
                     ->arrayNode('handlers')
                         ->useAttributeAsKey('key')
-                        ->canBeUnset()
                         ->prototype('array')
+                        ->canBeUnset()
+                            ->beforeNormalization()
+                                ->ifTrue(function ($node) {
+                                    return $node['type'] === 'rabbitmq_producer';
+                                })
+                                ->then(function ($node) {
+                                    $optionsResolver = new OptionsResolver();
+
+                                    $node['config'] = $optionsResolver
+                                        ->setDefault('connection', 'default')
+                                        ->setDefault('routing_key', 'public_event')
+                                        ->setDefault('exchange_options', ['name' => 'public_events', 'type' => 'direct'])
+                                        ->setDefault('queue_options', [])
+                                        ->setRequired('callback')
+                                        ->resolve($node['config']);
+
+                                    return $node;
+                                })
+                            ->end()
                         ->children()
                             ->scalarNode('type')->end()
-                            ->variableNode('config')->end()
+                            ->variableNode('config')->defaultValue([])->end()
                             ->variableNode('filters')->end()
                             ->scalarNode('formatter')->end()
                         ->end()
@@ -38,7 +57,6 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
             ;
-
         return $treeBuilder;
     }
 }

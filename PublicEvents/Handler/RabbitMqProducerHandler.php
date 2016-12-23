@@ -16,7 +16,7 @@ class RabbitMqProducerHandler extends Handler
      * @param ProducerInterface $producer
      * @param $routingKey
      */
-    public function __construct(ProducerInterface $producer, $routingKey)
+    public function __construct(ProducerInterface $producer = null, $routingKey = null)
     {
         $this->producer = $producer;
         $this->routingKey = $routingKey;

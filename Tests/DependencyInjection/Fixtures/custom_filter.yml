@@ -1,5 +1,5 @@
 imports:
-    - { resource: event_dispatcher_and_logger_and_custom_filter.yml }
+    - { resource: services/event_dispatcher_and_logger_and_custom_filter.yml }
 
 elefant_public_events:
     formatter: array
