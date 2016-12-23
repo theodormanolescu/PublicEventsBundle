@@ -5,7 +5,6 @@ namespace Elefant\PublicEventsBundle\DependencyInjection\Compiler;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\FilterInterface;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEventDispatcher;
-use SebastianBergmann\CodeCoverage\Filter;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -37,8 +36,20 @@ class ServicePass implements CompilerPassInterface
             }
         }
 
+        if ($container->hasParameter('elefant.public_events.has_rabbitmq_handler')) {
+            if (!$container->hasExtension('old_sound_rabbit_mq')) {
+                throw new \LogicException('you need RabbitMqBundle to use rabbitmq');
+            }
+        }
+
         foreach ($container->findTaggedServiceIds('elefant.public_events.handler') as $serviceId => $tags) {
             $handlerDefinition = $container->getDefinition($serviceId);
+
+            foreach ($tags as $tag) {
+                if ($tag['type'] === 'rabbitmq') {
+                    $handlerDefinition->setArguments([new Reference(sprintf('old_sound_rabbit_mq.public_events_%s_producer', $tag['name'])), $tag['routing_key']]);
+                }
+            }
             foreach ($handlerDefinition->getMethodCalls() as $call) {
                 if ($call[0] !== 'addFilter') {
                     continue;
@@ -48,8 +59,6 @@ class ServicePass implements CompilerPassInterface
                     $filterClass = $container->getDefinition((string)$call[1][0])->getClass();
                 } elseif ($call[1][0] instanceof Definition) {
                     $filterClass = $call[1][0]->getClass();
-                } else {
-                    throw new \InvalidArgumentException(sprintf('Invalid filter %s', $call[1]));
                 }
 
                 if (!class_implements($filterClass, FilterInterface::class)) {

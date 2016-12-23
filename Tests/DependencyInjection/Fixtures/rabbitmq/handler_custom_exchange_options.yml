@@ -1,5 +1,5 @@
 imports:
-    - { resource: event_dispatcher.yml }
+    - { resource: services/event_dispatcher.yml }
 
 old_sound_rabbit_mq:
     connections:
@@ -8,15 +8,12 @@ old_sound_rabbit_mq:
             port:     'port'
             user:     'user'
             password: 'password'
-    producers:
-        test_producer:
-            exchange_options: {name: 'test_exchange', type: 'direct'}
 
 elefant_public_events:
     formatter: array
     handlers:
         producer_test:
-            type: rabbitmq_producer
+            type: rabbitmq
             config:
-                producer: 'test_producer'
-                routing_key: test_routing_key
+                exchange_options: {name: exchange_name, type: special}
+                callback: event_dispatcher

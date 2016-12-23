@@ -2,11 +2,6 @@ imports:
     - { resource: services/event_dispatcher_and_logger.yml }
 
 elefant_public_events:
-    formatter: array
     handlers:
         logger_test:
             type: logger
-            filters:
-                - {name: regex1}
-                - {name: regex2}
-                - {class: ClassName}

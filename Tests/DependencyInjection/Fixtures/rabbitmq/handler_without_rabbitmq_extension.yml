@@ -1,0 +1,10 @@
+imports:
+    - { resource: services/event_dispatcher.yml }
+
+elefant_public_events:
+    formatter: array
+    handlers:
+        producer_test:
+            type: rabbitmq
+            config:
+                callback: event_dispatcher

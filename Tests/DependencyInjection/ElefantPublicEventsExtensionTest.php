@@ -2,21 +2,13 @@
 
 namespace Elefant\PublicEventsBundle\Tests\DependencyInjection;
 
-use Elefant\PublicEventsBundle\DependencyInjection\ElefantPublicEventsExtension;
-use Elefant\PublicEventsBundle\ElefantPublicEventsBundle;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\ClassFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Formatter\ArrayFormatter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEventDispatcher;
-use Elefant\PublicEventsBundle\PublicEvents\Serializer\NoopSerializer;
-use OldSound\RabbitMqBundle\DependencyInjection\OldSoundRabbitMqExtension;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Reference;
 
 class ElefantPublicEventsExtensionTest extends TestCase
@@ -24,19 +16,19 @@ class ElefantPublicEventsExtensionTest extends TestCase
 
     public function testNoPublicEventDispatcherWhenThereIsNoEventDispatcher()
     {
-        $container = $this->createContainer('no_event_dispatcher.yml');
+        $container = ContainerFactory::createContainer();
         $this->assertFalse($container->has(PublicEventDispatcher::ID));
     }
 
     public function testNoPublicEventDispatcherWhenIsDisabled()
     {
-        $container = $this->createContainer('disabled.yml');
+        $container = ContainerFactory::createContainer('disabled.yml');
         $this->assertFalse($container->has(PublicEventDispatcher::ID));
     }
 
     public function testPublicEventDispatcherDecoratesEventDispatcherWhenEnabled()
     {
-        $container = $this->createContainer('enabled.yml');
+        $container = ContainerFactory::createContainer('enabled.yml');
         //When enabled, PublicEventDispatcher should replace the default EventDispatcher
         /** @var PublicEventDispatcher $eventDispatcher */
         $eventDispatcher = $container->get('event_dispatcher');
@@ -45,14 +37,14 @@ class ElefantPublicEventsExtensionTest extends TestCase
 
     public function testNoLoggerHandlerWhenThereIsNoLogger()
     {
-        $container = $this->createContainer('logger_handler_without_logger.yml');
+        $container = ContainerFactory::createContainer('logger_handler_without_logger.yml');
 
         $this->assertFalse($container->has('elefant.public_events.logger_test_handler_without'));
     }
 
     public function testThereIsLoggerHandlerWhenThereIsLogger()
     {
-        $container = $this->createContainer('logger_handler_with_logger.yml');
+        $container = ContainerFactory::createContainer('logger_handler_with_logger.yml');
 
         /** @var Definition $loggerHandler */
         $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
@@ -61,7 +53,7 @@ class ElefantPublicEventsExtensionTest extends TestCase
 
     public function testFormatterAndFiltersAreSet()
     {
-        $container = $this->createContainer('logger_handler_with_logger.yml');
+        $container = ContainerFactory::createContainer('logger_handler_with_logger.yml');
 
         /** @var Definition $loggerHandler */
         $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
@@ -80,7 +72,7 @@ class ElefantPublicEventsExtensionTest extends TestCase
 
     public function testGuzzleHandler()
     {
-        $container = $this->createContainer('guzzle_handler.yml');
+        $container = ContainerFactory::createContainer('guzzle_handler.yml');
         /** @var Definition $guzzleHandler */
         $guzzleHandler = $container->getDefinition('elefant.public_events.guzzle_test_handler');
 
@@ -97,7 +89,7 @@ class ElefantPublicEventsExtensionTest extends TestCase
 
     public function testGuzzleHandlerDefaultConfig()
     {
-        $container = $this->createContainer('guzzle_handler_no_config.yml');
+        $container = ContainerFactory::createContainer('guzzle_handler_no_config.yml');
         /** @var Definition $guzzleHandler */
         $guzzleHandler = $container->getDefinition('elefant.public_events.guzzle_test_handler');
 
@@ -112,39 +104,9 @@ class ElefantPublicEventsExtensionTest extends TestCase
         );
     }
 
-    public function testRabbitMqProducer()
-    {
-        $container = $this->createContainer('rabbitmq_producer_handler.yml', [new OldSoundRabbitMqExtension()]);
-        /** @var Definition $producerHandler */
-        $producerHandler = $container->getDefinition('elefant.public_events.producer_test_handler');
-
-        $this->assertEquals(
-            [
-                new Reference('old_sound_rabbit_mq.test_producer_producer'),
-                'test_routing_key',
-            ],
-            $producerHandler->getArguments()
-        );
-    }
-
-    public function testRabbitMqProducerWithoutRoutingKey()
-    {
-        $container = $this->createContainer('rabbitmq_producer_handler_without_routing_key.yml', [new OldSoundRabbitMqExtension()]);
-        /** @var Definition $producerHandler */
-        $producerHandler = $container->getDefinition('elefant.public_events.producer_test_handler');
-
-        $this->assertEquals(
-            [
-                new Reference('old_sound_rabbit_mq.test_producer_producer'),
-                'producer_test',
-            ],
-            $producerHandler->getArguments()
-        );
-    }
-
     public function testCustomFilter()
     {
-        $container = $this->createContainer('custom_filter.yml');
+        $container = ContainerFactory::createContainer('custom_filter.yml');
 
         /** @var Definition $loggerHandler */
         $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
@@ -165,12 +127,12 @@ class ElefantPublicEventsExtensionTest extends TestCase
      */
     public function testCustomInvalidFilter()
     {
-        $this->createContainer('custom_invalid_filter.yml');
+        ContainerFactory::createContainer('custom_invalid_filter.yml');
     }
 
     public function testCustomFormatter()
     {
-        $container = $this->createContainer('custom_formatter.yml');
+        $container = ContainerFactory::createContainer('custom_formatter.yml');
 
         /** @var Definition $loggerHandler */
         $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
@@ -185,24 +147,12 @@ class ElefantPublicEventsExtensionTest extends TestCase
         );
     }
 
-    private function createContainer($file, $extensions = [])
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage You should define a formatter for handler "logger_test" or define a global formatter under "elefant_public_events"
+     */
+    public function testHandlerWithoutFormatter()
     {
-        $container = new ContainerBuilder(new ParameterBag(array('kernel.debug' => false)));
-
-        $container->registerExtension(new ElefantPublicEventsExtension());
-
-        foreach ($extensions as $extension) {
-            $container->registerExtension($extension);
-        }
-
-        $locator = new FileLocator(__DIR__ . '/Fixtures');
-        $loader = new YamlFileLoader($container, $locator);
-        $loader->load($file);
-
-        $bundle = new ElefantPublicEventsBundle();
-        $bundle->build($container);
-        $container->compile();
-
-        return $container;
+        ContainerFactory::createContainer('logger_handler_without_formatter.yml');
     }
 }
