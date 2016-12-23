@@ -46,12 +46,14 @@ elefant_public_events:
                 uri: /test_uri #default: /
                 headers: ['extra headers'] #default: []
             formatter: array
-        producer_test: #You need rabbitmq bundle
-             type: rabbitmq_producer #producer name in old_sound_rabbit_mq.producers
+        rabbit_test: #You need rabbitmq bundle
+             type: rabbitmq
              config:
                  producer: 'test_producer'
-                 routing_key: test_routing_key # default: current handler name
-             formatter: array                   
+                 connection: default# default: default
+                 exchange_options: {}
+                 queue_options: {}
+             formatter: array
 ````
 
 # Handlers
@@ -60,8 +62,12 @@ Handlers process public events. Supported handlers:
 
 - LoggerHandler uses [Monolog](https://github.com/Seldaek/monolog) (supports a [psr-log](https://github.com/php-fig/log) `LoggerInterface`)
 - GuzzleHandler uses [Guzzle](https://github.com/guzzle/guzzle)
-- RabbitmqProducerHandler uses [RabbitMqBundle](https://github.com/php-amqplib/RabbitMqBundle)
+- RabbitmqHandler uses [RabbitMqBundle](https://github.com/php-amqplib/RabbitMqBundle)
 - Custom handlers should implement `Elefant\PublicEventsBundle\PublicEvents\Handler\HandlerInterface`
+
+> RabbitmqHandler will automatically create one consumer and one producer for each handler of type rabbitmq
+
+For **rabbit_test** handler,  `old_sound_rabbit_mq.public_events_rabbit_test_consumer` and `old_sound_rabbit_mq.public_events_rabbit_test_producer` will be created.
 
 # Filters
 Filters which event you want to make public.

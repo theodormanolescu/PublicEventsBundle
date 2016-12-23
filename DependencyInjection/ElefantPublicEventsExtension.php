@@ -8,7 +8,7 @@ use Elefant\PublicEventsBundle\PublicEvents\Formatter\ArrayFormatter;
 use Elefant\PublicEventsBundle\PublicEvents\Formatter\JsonFormatter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\GuzzleHandler;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
-use Elefant\PublicEventsBundle\PublicEvents\Handler\RabbitMqProducerHandler;
+use Elefant\PublicEventsBundle\PublicEvents\Handler\RabbitMqHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEventDispatcher;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -42,7 +42,7 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
                 case 'guzzle':
                     $this->loadGuzzleHandler($key, $handler, $container, $handler['type'], $config['formatter']);
                     break;
-                case 'rabbitmq_producer':
+                case 'rabbitmq':
                     $this->loadRabbitMqProducerHandler($key, $handler, $container, $handler['type'], $config['formatter']);
                     break;
             }
@@ -87,7 +87,7 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
             ->setRequired('callback')
             ->resolve($config['config']);
 
-        $handlerDefinition = $this->loadHandler($name, $config, $container, RabbitMqProducerHandler::class, $type, $defaultFormatter);
+        $handlerDefinition = $this->loadHandler($name, $config, $container, RabbitMqHandler::class, $type, $defaultFormatter);
         $handlerDefinition->clearTag('elefant.public_events.handler');
         $handlerDefinition->addTag('elefant.public_events.handler', ['name' => $name, 'type' => $type, 'routing_key' => $config['config']['routing_key']]);
 
@@ -167,6 +167,9 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
         $config = $this->processConfiguration(new Configuration(), $container->getExtensionConfig('elefant_public_events'));
         if (!empty($config['handlers'])) {
             foreach ($config['handlers'] as $name => $handler) {
+                if ($handler['type'] !== 'rabbitmq') {
+                    continue;
+                }
                 if (!isset($handler['config']['queue_options']['name'])) {
                     $handler['config']['queue_options']['name'] = $handler['config']['exchange_options']['name'] . '.' . $name;
                 }

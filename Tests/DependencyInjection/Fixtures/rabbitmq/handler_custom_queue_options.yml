@@ -13,6 +13,7 @@ elefant_public_events:
     formatter: array
     handlers:
         producer_test:
-            type: rabbitmq_producer
+            type: rabbitmq
             config:
+                queue_options: {name: exchange_name, routing_keys: ['test_routing_key']}
                 callback: event_dispatcher

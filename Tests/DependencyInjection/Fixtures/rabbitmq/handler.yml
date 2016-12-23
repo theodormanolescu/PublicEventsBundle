@@ -3,7 +3,7 @@ imports:
 
 old_sound_rabbit_mq:
     connections:
-        custom:
+        default:
             host:     'host'
             port:     'port'
             user:     'user'
@@ -13,7 +13,6 @@ elefant_public_events:
     formatter: array
     handlers:
         producer_test:
-            type: rabbitmq_producer
+            type: rabbitmq
             config:
-                connection: custom
                 callback: event_dispatcher

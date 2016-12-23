@@ -13,7 +13,7 @@ elefant_public_events:
     formatter: array
     handlers:
         producer_test:
-            type: rabbitmq_producer
+            type: rabbitmq
             config:
                 exchange_options: {name: exchange_name, type: special}
                 callback: event_dispatcher

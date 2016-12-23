@@ -1,0 +1,7 @@
+services:
+    event_dispatcher:
+        class: Symfony\Component\EventDispatcher\EventDispatcher
+    logger:
+        class: \stdClass
+    custom_formatter:
+        class: stdClass

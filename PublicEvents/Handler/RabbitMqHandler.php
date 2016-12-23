@@ -4,7 +4,7 @@ namespace Elefant\PublicEventsBundle\PublicEvents\Handler;
 
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 
-class RabbitMqProducerHandler extends Handler
+class RabbitMqHandler extends Handler
 {
     /** @var  ProducerInterface */
     private $producer;

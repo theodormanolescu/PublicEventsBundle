@@ -31,7 +31,7 @@ class Configuration implements ConfigurationInterface
                         ->canBeUnset()
                             ->beforeNormalization()
                                 ->ifTrue(function ($node) {
-                                    return $node['type'] === 'rabbitmq_producer';
+                                    return $node['type'] === 'rabbitmq';
                                 })
                                 ->then(function ($node) {
                                     $optionsResolver = new OptionsResolver();

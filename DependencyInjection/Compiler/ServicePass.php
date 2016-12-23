@@ -38,7 +38,7 @@ class ServicePass implements CompilerPassInterface
 
         if ($container->hasParameter('elefant.public_events.has_rabbitmq_handler')) {
             if (!$container->hasExtension('old_sound_rabbit_mq')) {
-                throw new \LogicException('you need RabbitMqBundle to use rabbitmq_producer');
+                throw new \LogicException('you need RabbitMqBundle to use rabbitmq');
             }
         }
 
@@ -46,8 +46,8 @@ class ServicePass implements CompilerPassInterface
             $handlerDefinition = $container->getDefinition($serviceId);
 
             foreach ($tags as $tag) {
-                if ($tag['type'] === 'rabbitmq_producer') {
-                    //$handlerDefinition->setArguments([new Reference(sprintf('old_sound_rabbit_mq.public_events_%s_producer', $tag['name'])), $tag['routing_key']]);
+                if ($tag['type'] === 'rabbitmq') {
+                    $handlerDefinition->setArguments([new Reference(sprintf('old_sound_rabbit_mq.public_events_%s_producer', $tag['name'])), $tag['routing_key']]);
                 }
             }
             foreach ($handlerDefinition->getMethodCalls() as $call) {
@@ -59,8 +59,6 @@ class ServicePass implements CompilerPassInterface
                     $filterClass = $container->getDefinition((string)$call[1][0])->getClass();
                 } elseif ($call[1][0] instanceof Definition) {
                     $filterClass = $call[1][0]->getClass();
-                } else {
-                    throw new \InvalidArgumentException(sprintf('Invalid filter %s', $call[1]));
                 }
 
                 if (!class_implements($filterClass, FilterInterface::class)) {

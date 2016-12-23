@@ -146,4 +146,13 @@ class ElefantPublicEventsExtensionTest extends TestCase
             $loggerHandler->getMethodCalls()
         );
     }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage You should define a formatter for handler "logger_test" or define a global formatter under "elefant_public_events"
+     */
+    public function testHandlerWithoutFormatter()
+    {
+        ContainerFactory::createContainer('logger_handler_without_formatter.yml');
+    }
 }
