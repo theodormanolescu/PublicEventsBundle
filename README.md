@@ -49,10 +49,10 @@ elefant_public_events:
         rabbit_test: #You need rabbitmq bundle
              type: rabbitmq
              config:
-                 producer: 'test_producer'
                  connection: default# default: default
                  exchange_options: {}
                  queue_options: {}
+                 callback: 'your_bundle.service_definition' #must implement ConsumerInterface
              formatter: array
 ````
 
