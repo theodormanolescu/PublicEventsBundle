@@ -24,6 +24,10 @@ class RabbitMqHandler extends Handler
 
     protected function doHandle($message)
     {
-        $this->producer->publish($message, $this->routingKey);
+        try {
+            $this->producer->publish($message, $this->routingKey);
+        } catch (\Exception $e) {
+
+        }
     }
 }
