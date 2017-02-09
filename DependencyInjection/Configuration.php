@@ -41,6 +41,7 @@ class Configuration implements ConfigurationInterface
                                         ->setDefault('routing_key', 'public_event')
                                         ->setDefault('exchange_options', ['name' => 'public_events', 'type' => 'direct'])
                                         ->setDefault('queue_options', [])
+                                        ->setDefault('qos_options', [])
                                         ->setRequired('callback')
                                         ->resolve($node['config']);
 

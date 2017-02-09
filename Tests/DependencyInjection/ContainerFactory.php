@@ -4,7 +4,6 @@ namespace Elefant\PublicEventsBundle\Tests\DependencyInjection;
 
 use Elefant\PublicEventsBundle\DependencyInjection\ElefantPublicEventsExtension;
 use Elefant\PublicEventsBundle\ElefantPublicEventsBundle;
-use OldSound\RabbitMqBundle\OldSoundRabbitMqBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;

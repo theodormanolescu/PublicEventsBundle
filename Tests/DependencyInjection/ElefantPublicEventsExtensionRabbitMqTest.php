@@ -51,6 +51,21 @@ class ElefantPublicEventsExtensionRabbitMqTest extends TestCase
         );
     }
 
+    public function testConfigWithCustomQosOptions()
+    {
+        $container = ContainerFactory::createContainer('rabbitmq/handler_custom_qos_options.yml', [new OldSoundRabbitMqExtension()]);
+        $consumerDefinition = $container->getDefinition('old_sound_rabbit_mq.public_events_producer_test_consumer');
+
+        $this->assertEquals(Consumer::class, $consumerDefinition->getClass());
+        $this->assertEquals([new Reference('old_sound_rabbit_mq.connection.default')], $consumerDefinition->getArguments());
+
+        $qosOptions = $consumerDefinition->getMethodCalls()[3][1];
+        $this->assertArraySubset(
+            [0, 1, false],
+            $qosOptions
+        );
+    }
+
     public function testConfigWithCustomConnection()
     {
         $container = ContainerFactory::createContainer('rabbitmq/handler_custom_connection.yml', [new OldSoundRabbitMqExtension()]);
