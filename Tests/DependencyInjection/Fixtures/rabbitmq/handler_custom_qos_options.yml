@@ -1,0 +1,19 @@
+imports:
+    - { resource: services/event_dispatcher.yml }
+
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     'host'
+            port:     'port'
+            user:     'user'
+            password: 'password'
+
+elefant_public_events:
+    formatter: array
+    handlers:
+        producer_test:
+            type: rabbitmq
+            config:
+                qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+                callback: event_dispatcher

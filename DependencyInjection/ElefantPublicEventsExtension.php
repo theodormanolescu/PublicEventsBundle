@@ -84,6 +84,7 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
             ->setDefault('routing_key', $name)
             ->setDefault('exchange_options', ['name' => 'public_events', 'type' => 'direct'])
             ->setDefault('queue_options', [])
+            ->setDefault('qos_options', [])
             ->setRequired('callback')
             ->resolve($config['config']);
 
@@ -188,6 +189,7 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
                                 'connection' => $handler['config']['connection'],
                                 'exchange_options' => $handler['config']['exchange_options'],
                                 'queue_options' => $handler['config']['queue_options'],
+                                'qos_options' => $handler['config']['qos_options'],
                                 'callback' => $handler['config']['callback'],
                             ]
                         ]
