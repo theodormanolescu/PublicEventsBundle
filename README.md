@@ -11,7 +11,7 @@
 # Installation
 
 `composer require elefantlabs/public-events-bundle`
-sadasd
+
 add to `AppKernel.php`
 
 ````php
