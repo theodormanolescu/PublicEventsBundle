@@ -2,7 +2,7 @@
 
 namespace Elefant\PublicEventsBundle\Tests\PublicEvents\Handler;
 
-use Elefant\PublicEventsBundle\PublicEvents\Formatter\FormatterInterface;
+use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\GuzzleHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 use GuzzleHttp\ClientInterface;
@@ -26,7 +26,7 @@ class GuzzleHandlerTest extends TestCase
             }));
 
         $guzzleHandler = new GuzzleHandler($client, 'get', '/test_api');
-        HandlerMocker::addFilterAndJsonFormatter($guzzleHandler);
+        $guzzleHandler->addFilter(new NameFilter('/.*/'));
         $guzzleHandler->setFormatter(HandlerMocker::getMockFormatter($this, 'formatted'));
         $guzzleHandler->handle(new PublicEvent('test_event', new Event()));
     }

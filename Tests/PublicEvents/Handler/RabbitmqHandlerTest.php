@@ -2,6 +2,7 @@
 
 namespace Elefant\PublicEventsBundle\Tests\PublicEvents\Handler;
 
+use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\RabbitMqHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
@@ -19,7 +20,7 @@ class RabbitmqHandlerTest extends TestCase
             ->with('message','routing_key');
 
         $producerHandler = new RabbitMqHandler($producer, 'routing_key');
-        HandlerMocker::addFilterAndJsonFormatter($producerHandler);
+        $producerHandler->addFilter(new NameFilter('/.*/'));
         $producerHandler->setFormatter(HandlerMocker::getMockFormatter($this, 'message'));
 
         $producerHandler->handle(new PublicEvent('test_event', new Event()));

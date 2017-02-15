@@ -10,13 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 class HandlerMocker
 {
-    public static function addFilterAndJsonFormatter(Handler $handler)
-    {
-        $handler
-            ->addFilter(new NameFilter('/.*/'))
-            ->setFormatter(new JsonFormatter());
-    }
-
     public static function getMockFormatter(TestCase $testCase, $willReturn, ...$nextWillReturnValues)
     {
         $mockFormatter = $testCase->getMockBuilder(FormatterInterface::class)->getMock();
