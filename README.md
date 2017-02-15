@@ -30,6 +30,7 @@ public function registerBundles()
 elefant_public_events:
     formatter: array|json #or a service id for a custom formatter
     enabled: #default true
+    trace: #default false, if enabled, 'event_source' is set for PublicEvent (uses debug_backtrace)
     handlers:
         logger_test: #You need a logger service
             type: logger

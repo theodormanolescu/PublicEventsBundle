@@ -56,6 +56,7 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->scalarNode('trace')->defaultFalse()->end()
             ->end()
             ;
         return $treeBuilder;

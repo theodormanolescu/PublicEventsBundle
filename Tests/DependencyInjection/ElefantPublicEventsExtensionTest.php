@@ -35,6 +35,14 @@ class ElefantPublicEventsExtensionTest extends TestCase
         $this->assertInstanceOf(PublicEventDispatcher::class, $eventDispatcher);
     }
 
+    public function testPublicEventDispatcherEnablesEventTracing()
+    {
+        $container = ContainerFactory::createContainer('enable_tracing.yml');
+        $eventDispatcherDefinition = $container->getDefinition('event_dispatcher');
+
+        $this->assertEquals(true, $eventDispatcherDefinition->getArguments()[1]);
+    }
+
     public function testNoLoggerHandlerWhenThereIsNoLogger()
     {
         $container = ContainerFactory::createContainer('logger_handler_without_logger.yml');
