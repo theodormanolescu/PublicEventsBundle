@@ -13,13 +13,18 @@ class PublicEventDispatcher implements EventDispatcherInterface
 
     /** @var  EventDispatcherInterface */
     private $eventDispatcher;
+    /** @var  bool */
+    private $traceSource;
 
     /**
+     * PublicEventDispatcher constructor.
      * @param EventDispatcherInterface $eventDispatcher
+     * @param bool $traceSource
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher, $traceSource = false)
     {
         $this->eventDispatcher = $eventDispatcher;
+        $this->traceSource = $traceSource;
     }
 
     /**
@@ -32,12 +37,33 @@ class PublicEventDispatcher implements EventDispatcherInterface
 
     public function dispatch($eventName, Event $event = null)
     {
+
         $event = $this->eventDispatcher->dispatch($eventName, $event);
         if (!$event) {
             $event = new Event();
         }
-        $this->eventDispatcher->dispatch('elefant.public_event', new PublicEvent($eventName, $event));
+
+        $publicEvent = $this->createPublicEvent($eventName, $event);
+        $this->eventDispatcher->dispatch('elefant.public_event', $publicEvent);
         return $event;
+    }
+
+    private function createPublicEvent($eventName, Event $event)
+    {
+        $trace = [];
+        if ($this->traceSource) {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
+            /**
+             * $backtrace[0]: this::dispatch
+             * $backtrace[1]: application caller
+             * $backtrace[2]: deeper application caller.. up to script entry point
+             */
+            if (isset($backtrace[1])) {
+                $trace = $backtrace[1];
+            }
+        }
+
+        return new PublicEvent($eventName, $event, $trace);
     }
 
     public function addListener($eventName, $listener, $priority = 0)

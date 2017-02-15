@@ -9,15 +9,17 @@ class PublicEvent extends Event
     /** @var  Event */
     private $originalEvent;
     private $originalEventName;
+    private $trace;
 
     /**
      * @param Event $originalEvent
      * @param $originalEventName
      */
-    public function __construct($originalEventName, Event $originalEvent)
+    public function __construct($originalEventName, Event $originalEvent, $trace = [])
     {
         $this->originalEvent = $originalEvent;
         $this->originalEventName = $originalEventName;
+        $this->trace = $trace;
     }
 
     /**
@@ -34,5 +36,10 @@ class PublicEvent extends Event
     public function getOriginalEventName()
     {
         return $this->originalEventName;
+    }
+
+    public function getTrace()
+    {
+        return $this->trace;
     }
 }

@@ -11,7 +11,8 @@ class JsonFormatter implements FormatterInterface
     {
         return json_encode([
             'event_name' => $event->getOriginalEventName(),
-            'event' => (array)$event->getOriginalEvent()
+            'event' => (array)$event->getOriginalEvent(),
+            'event_source' => $event->getTrace()
         ]);
     }
 }
