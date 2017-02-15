@@ -32,7 +32,7 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
         $container->setDefinition(PublicEventDispatcher::ID, $publicEventDispatcherDefinition)
             ->setPublic(false)
             ->setDecoratedService('event_dispatcher')
-            ->setArguments([new Reference(PublicEventDispatcher::ID . '.inner')]);
+            ->setArguments([new Reference(PublicEventDispatcher::ID . '.inner'), (bool)$config['trace']]);
 
         foreach ($config['handlers'] as $key => $handler) {
             switch ($handler['type']) {
