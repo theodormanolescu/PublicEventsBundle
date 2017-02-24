@@ -134,4 +134,24 @@ class ElefantPublicEventsExtensionRabbitMqTest extends TestCase
     {
         ContainerFactory::createContainer('custom_invalid_formatter.yml');
     }
+
+    public function testConfigWithCustomIdleTimeoutOptions()
+    {
+        $container = ContainerFactory::createContainer('rabbitmq/handler_custom_idle_timeout_options.yml', [new OldSoundRabbitMqExtension()]);
+        $consumerDefinition = $container->getDefinition('old_sound_rabbit_mq.public_events_producer_test_consumer');
+
+        $this->assertEquals(Consumer::class, $consumerDefinition->getClass());
+
+        $idleTimeoutOption = $consumerDefinition->getMethodCalls()[4][1];
+        $this->assertArraySubset(
+            [10],
+            $idleTimeoutOption
+        );
+
+        $idleTimeoutExitCodeOption = $consumerDefinition->getMethodCalls()[5][1];
+        $this->assertArraySubset(
+            [1],
+            $idleTimeoutExitCodeOption
+        );
+    }
 }
