@@ -42,6 +42,8 @@ class Configuration implements ConfigurationInterface
                                         ->setDefault('exchange_options', ['name' => 'public_events', 'type' => 'direct'])
                                         ->setDefault('queue_options', [])
                                         ->setDefault('qos_options', [])
+                                        ->setDefault('idle_timeout', null)
+                                        ->setDefault('idle_timeout_exit_code', null)
                                         ->setRequired('callback')
                                         ->resolve($node['config']);
 

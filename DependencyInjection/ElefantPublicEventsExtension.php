@@ -85,6 +85,8 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
             ->setDefault('exchange_options', ['name' => 'public_events', 'type' => 'direct'])
             ->setDefault('queue_options', [])
             ->setDefault('qos_options', [])
+            ->setDefault('idle_timeout', null)
+            ->setDefault('idle_timeout_exit_code', null)
             ->setRequired('callback')
             ->resolve($config['config']);
 
@@ -191,6 +193,8 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
                                 'queue_options' => $handler['config']['queue_options'],
                                 'qos_options' => $handler['config']['qos_options'],
                                 'callback' => $handler['config']['callback'],
+                                'idle_timeout' => $handler['config']['idle_timeout'],
+                                'idle_timeout_exit_code' => $handler['config']['idle_timeout_exit_code'],
                             ]
                         ]
                     ]
