@@ -19,7 +19,7 @@ interface HandlerInterface
      * @param FormatterInterface $formatter
      * @return FormatterInterface
      */
-    public function setFormatter(FormatterInterface $formatter);
+    public function addFormatter(FormatterInterface $formatter);
 
     /**
      * @param FilterInterface $filter

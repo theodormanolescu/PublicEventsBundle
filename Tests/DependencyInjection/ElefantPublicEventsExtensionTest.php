@@ -4,7 +4,7 @@ namespace Elefant\PublicEventsBundle\Tests\DependencyInjection;
 
 use Elefant\PublicEventsBundle\PublicEvents\Filter\ClassFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
-use Elefant\PublicEventsBundle\PublicEvents\Formatter\ArrayFormatter;
+use Elefant\PublicEventsBundle\PublicEvents\Formatter\MetadataFormatter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEventDispatcher;
 use PHPUnit\Framework\TestCase;
@@ -68,7 +68,7 @@ class ElefantPublicEventsExtensionTest extends TestCase
 
         $this->assertEquals(
             [
-                ['setFormatter', [new Definition(ArrayFormatter::class)]],
+                ['addFormatter', [new Definition(MetadataFormatter::class)]],
                 ['addFilter', [new Definition(NameFilter::class, ['regex1'])]],
                 ['addFilter', [new Definition(NameFilter::class, ['regex2'])]],
                 ['addFilter', [new Definition(ClassFilter::class, ['ClassName'])]],
@@ -121,7 +121,6 @@ class ElefantPublicEventsExtensionTest extends TestCase
 
         $this->assertEquals(
             [
-                ['setFormatter', [new Definition(ArrayFormatter::class)]],
                 ['addFilter', [new Reference('custom_filter')]],
                 ['setLogger', [new Reference('logger')]],
             ],
@@ -147,7 +146,7 @@ class ElefantPublicEventsExtensionTest extends TestCase
 
         $this->assertEquals(
             [
-                ['setFormatter', [new Reference('custom_formatter')]],
+                ['addFormatter', [new Reference('custom_formatter')]],
                 ['addFilter', [new Definition(NameFilter::class, ['/.*/'])]],
                 ['setLogger', [new Reference('logger')]],
             ],
@@ -155,12 +154,22 @@ class ElefantPublicEventsExtensionTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage You should define a formatter for handler "logger_test" or define a global formatter under "elefant_public_events"
-     */
-    public function testHandlerWithoutFormatter()
+    public function testMultipleFormatters()
     {
-        ContainerFactory::createContainer('logger_handler_without_formatter.yml');
+        $container = ContainerFactory::createContainer('multiple_formatters.yml');
+
+        /** @var Definition $loggerHandler */
+        $loggerHandler = $container->getDefinition('elefant.public_events.logger_test_handler');
+
+        $this->assertEquals(
+            [
+                ['addFormatter', [new Reference('custom_formatter')]],
+                ['addFormatter', [new Reference('custom_formatter')]],
+                ['addFormatter', [new Definition(MetadataFormatter::class)]],
+                ['addFilter', [new Definition(NameFilter::class, ['/.*/'])]],
+                ['setLogger', [new Reference('logger')]],
+            ],
+            $loggerHandler->getMethodCalls()
+        );
     }
 }

@@ -3,13 +3,15 @@
 namespace Elefant\PublicEventsBundle\Tests\PublicEvents\Handler;
 
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
-use Elefant\PublicEventsBundle\PublicEvents\Formatter\ArrayFormatter;
+use Elefant\PublicEventsBundle\PublicEvents\Formatter\MetadataFormatter;
 use Elefant\PublicEventsBundle\PublicEvents\Formatter\FormatterInterface;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class LoggerHandlerTest extends TestCase
@@ -23,7 +25,7 @@ class LoggerHandlerTest extends TestCase
         $logger->expects($this->once())->method('log')->with(
             'info',
             'public_event',
-            ['formatted']
+            ['event' => ['formatted']]
         );
 
         $filter = new NameFilter('/name/');
@@ -31,7 +33,7 @@ class LoggerHandlerTest extends TestCase
 
         $loggerHandler
             ->setLogger($logger)
-            ->setFormatter(HandlerMocker::getMockFormatter($this, ['formatted']))
+            ->addFormatter(HandlerMocker::getMockFormatter($this, ['formatted']))
             ->addFilter($filter);
 
         $loggerHandler->handle(new PublicEvent('name', $event));
@@ -61,7 +63,7 @@ class LoggerHandlerTest extends TestCase
 
         $loggerHandler
             ->addFilter($filter)
-            ->setFormatter(new ArrayFormatter());
+            ->addFormatter(new MetadataFormatter());
 
         $loggerHandler->handle(new PublicEvent('name', $event));
     }

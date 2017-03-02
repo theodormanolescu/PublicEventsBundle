@@ -10,7 +10,6 @@ old_sound_rabbit_mq:
             password: 'password'
 
 elefant_public_events:
-    formatter: array
     handlers:
         producer_test:
             type: rabbitmq

@@ -22,12 +22,18 @@ class RabbitMqHandler extends Handler
         $this->routingKey = $routingKey;
     }
 
-    protected function doHandle($message)
+    protected function doHandle($formattedEvent)
     {
+        $message = json_encode($formattedEvent);
         try {
             $this->producer->publish($message, $this->routingKey);
-        } catch (\Exception $e) {
-
+        } catch (\Exception $exception) {
+            if ($this->logger) {
+                $this->logger->error(
+                    'PublicEventsBundle_RabbitMqHandler error publishing',
+                    ['exception' => $exception->getMessage()]
+                );
+            }
         }
     }
 }

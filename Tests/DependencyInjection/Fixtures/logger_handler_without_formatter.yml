@@ -1,7 +1,0 @@
-imports:
-    - { resource: services/event_dispatcher_and_logger.yml }
-
-elefant_public_events:
-    handlers:
-        logger_test:
-            type: logger

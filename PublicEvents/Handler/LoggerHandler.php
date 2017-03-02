@@ -7,8 +7,6 @@ use Psr\Log\LogLevel;
 
 class LoggerHandler extends Handler
 {
-    /** @var  LoggerInterface */
-    private $logger;
     private $level;
     private $logMessage;
 
@@ -25,13 +23,7 @@ class LoggerHandler extends Handler
     protected function doHandle($logContext)
     {
         if ($this->logger) {
-            $this->logger->log($this->level, $this->logMessage, $logContext);
+            $this->logger->log($this->level, $this->logMessage, ['event' => $logContext]);
         }
-    }
-
-    public function setLogger($logger)
-    {
-        $this->logger = $logger;
-        return $this;
     }
 }
