@@ -4,15 +4,16 @@ namespace Elefant\PublicEventsBundle\PublicEvents\Formatter;
 
 use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
 
-class JsonFormatter implements FormatterInterface
+class MetadataFormatter implements FormatterInterface
 {
 
     public function format(PublicEvent $event)
     {
-        return json_encode([
+        return [
             'event_name' => $event->getOriginalEventName(),
             'event' => (array)$event->getOriginalEvent(),
-            'event_source' => $event->getTrace()
-        ]);
+            'event_source' => $event->getTrace(),
+            'hostname' => php_uname('n')
+        ];
     }
 }

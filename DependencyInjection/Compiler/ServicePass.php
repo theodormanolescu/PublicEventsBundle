@@ -54,11 +54,13 @@ class ServicePass implements CompilerPassInterface
                 if ($call[0] !== 'addFilter') {
                     continue;
                 }
-
-                if ($call[1][0] instanceof Reference) {
-                    $filterClass = $container->getDefinition((string)$call[1][0])->getClass();
-                } elseif ($call[1][0] instanceof Definition) {
-                    $filterClass = $call[1][0]->getClass();
+                $filter = $call[1][0];
+                $filterClass = '';
+                if ($filter instanceof Reference) {
+                    $filterClass = $container->getDefinition((string)$filter)->getClass();
+                }
+                if ($filter instanceof Definition) {
+                    $filterClass = $filter->getClass();
                 }
 
                 if (!class_implements($filterClass, FilterInterface::class)) {

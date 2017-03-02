@@ -2,18 +2,21 @@
 
 namespace Elefant\PublicEventsBundle\Tests\PublicEvents\Handler;
 
-use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Formatter\FormatterInterface;
-use Elefant\PublicEventsBundle\PublicEvents\Formatter\JsonFormatter;
-use Elefant\PublicEventsBundle\PublicEvents\Handler\Handler;
 use PHPUnit\Framework\TestCase;
 
 class HandlerMocker
 {
+    /**
+     * @param TestCase $testCase
+     * @param $willReturn
+     * @param array ...$nextWillReturnValues
+     * @return FormatterInterface
+     */
     public static function getMockFormatter(TestCase $testCase, $willReturn, ...$nextWillReturnValues)
     {
         $mockFormatter = $testCase->getMockBuilder(FormatterInterface::class)->getMock();
-        $mockFormatter->expects($testCase->once())
+        $mockFormatter->expects($testCase->any())
             ->method('format')
             ->willReturn($willReturn, ...$nextWillReturnValues);
 

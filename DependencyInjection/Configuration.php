@@ -2,7 +2,6 @@
 
 namespace Elefant\PublicEventsBundle\DependencyInjection;
 
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -23,7 +22,7 @@ class Configuration implements ConfigurationInterface
             ->root('elefant_public_events')
                 ->fixXmlConfig('handler')
                 ->children()
-                    ->scalarNode('formatter')->defaultNull()->end()
+                    ->arrayNode('formatters')->prototype('scalar')->end()->end()
                     ->booleanNode('enabled')->defaultTrue()->end()
                     ->arrayNode('handlers')
                         ->useAttributeAsKey('key')
@@ -54,10 +53,11 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('type')->end()
                             ->variableNode('config')->defaultValue([])->end()
                             ->variableNode('filters')->end()
-                            ->scalarNode('formatter')->end()
+                            ->arrayNode('formatters')->prototype('scalar')->end()->end()
                         ->end()
                     ->end()
                 ->end()
+                ->scalarNode('trace')->defaultFalse()->end()
             ->end()
             ;
         return $treeBuilder;

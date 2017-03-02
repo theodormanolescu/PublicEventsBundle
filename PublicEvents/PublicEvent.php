@@ -42,4 +42,6 @@ class PublicEvent extends Event
     {
         return $this->trace;
     }
+
+    
 }

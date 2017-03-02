@@ -2,7 +2,6 @@ imports:
     - { resource: services/event_dispatcher.yml }
 
 elefant_public_events:
-    formatter: array
     handlers:
         logger_test_without:
             type: logger

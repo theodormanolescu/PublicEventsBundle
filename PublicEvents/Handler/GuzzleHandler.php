@@ -33,7 +33,8 @@ class GuzzleHandler extends Handler
 
     protected function doHandle($data)
     {
-        $request = new Request($this->method, $this->uri, $this->headers, $data);
+        $body = json_encode($data);
+        $request = new Request($this->method, $this->uri, $this->headers, $body);
         $this->client->send($request);
     }
 }

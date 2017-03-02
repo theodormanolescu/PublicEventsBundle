@@ -11,6 +11,6 @@ class ClassFilterTest extends TestCase
     {
         $classFilter = new ClassFilter(FilteredTestEvent::class);
 
-        $classFilter->isPublic('event', new FilteredTestEvent());
+        $this->assertTrue($classFilter->isPublic('event', new FilteredTestEvent()));
     }
 }
