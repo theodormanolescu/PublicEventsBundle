@@ -11,7 +11,7 @@ class MetadataFormatter implements FormatterInterface
     {
         return [
             'event_name' => $event->getOriginalEventName(),
-            'event' => (array)$event->getOriginalEvent(),
+            'event_class' => get_class($event->getOriginalEvent()),
             'event_source' => $event->getTrace(),
             'hostname' => php_uname('n')
         ];
