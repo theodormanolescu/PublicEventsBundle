@@ -4,8 +4,7 @@ namespace Elefant\PublicEventsBundle\DependencyInjection;
 
 use Elefant\PublicEventsBundle\PublicEvents\Filter\ClassFilter;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\NameFilter;
-use Elefant\PublicEventsBundle\PublicEvents\Formatter\ArrayFormatter;
-use Elefant\PublicEventsBundle\PublicEvents\Formatter\JsonFormatter;
+use Elefant\PublicEventsBundle\PublicEvents\Formatter\MetadataFormatter;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\GuzzleHandler;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\LoggerHandler;
 use Elefant\PublicEventsBundle\PublicEvents\Handler\RabbitMqHandler;
@@ -32,18 +31,18 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
         $container->setDefinition(PublicEventDispatcher::ID, $publicEventDispatcherDefinition)
             ->setPublic(false)
             ->setDecoratedService('event_dispatcher')
-            ->setArguments([new Reference(PublicEventDispatcher::ID . '.inner')]);
+            ->setArguments([new Reference(PublicEventDispatcher::ID . '.inner'), (bool)$config['trace']]);
 
         foreach ($config['handlers'] as $key => $handler) {
             switch ($handler['type']) {
                 case 'logger':
-                    $this->loadLoggerHandler($key, $handler, $container, $handler['type'], $config['formatter']);
+                    $this->loadLoggerHandler($key, $handler, $container, $handler['type'], $config['formatters']);
                     break;
                 case 'guzzle':
-                    $this->loadGuzzleHandler($key, $handler, $container, $handler['type'], $config['formatter']);
+                    $this->loadGuzzleHandler($key, $handler, $container, $handler['type'], $config['formatters']);
                     break;
                 case 'rabbitmq':
-                    $this->loadRabbitMqProducerHandler($key, $handler, $container, $handler['type'], $config['formatter']);
+                    $this->loadRabbitMqProducerHandler($key, $handler, $container, $handler['type'], $config['formatters']);
                     break;
             }
         }
@@ -85,6 +84,8 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
             ->setDefault('exchange_options', ['name' => 'public_events', 'type' => 'direct'])
             ->setDefault('queue_options', [])
             ->setDefault('qos_options', [])
+            ->setDefault('idle_timeout', null)
+            ->setDefault('idle_timeout_exit_code', null)
             ->setRequired('callback')
             ->resolve($config['config']);
 
@@ -95,42 +96,34 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
         return $handlerDefinition;
     }
 
-    private function loadHandler($name, array $config, ContainerBuilder $container, $handlerClass, $type, $defaultFormatter)
+    private function loadHandler($name, array $config, ContainerBuilder $container, $handlerClass, $type, $formatters)
     {
         $handlerDefinition = $container
             ->register(sprintf('elefant.public_events.%s_handler', $name), $handlerClass)
             ->addTag('elefant.public_events.handler', ['type' => $type]);
 
-        $this->setFormatter($name, $config, $handlerDefinition, $defaultFormatter);
+        $handlerFormatters = array_merge($config['formatters'], $formatters);
+
+        foreach ($handlerFormatters as $formatter) {
+            $this->addFormatter($handlerDefinition, $formatter);
+        }
 
         $this->addFilters($name, $config, $handlerDefinition, $container);
-
 
         return $handlerDefinition;
     }
 
-    private function setFormatter($name, array $config, Definition $handlerDefinition, $defaultFormatter)
+    private function addFormatter(Definition $handlerDefinition, $defaultFormatter)
     {
-        if (isset($config['formatter'])) {
-            $defaultFormatter = $config['formatter'];
-        }
-
-        if (!$defaultFormatter) {
-            throw new \InvalidArgumentException(sprintf('You should define a formatter for handler "%s" or define a global formatter under "elefant_public_events"', $name));
-        }
-
         switch ($defaultFormatter) {
-            case 'array':
-                $formatter = new Definition(ArrayFormatter::class);
-                break;
-            case 'json':
-                $formatter = new Definition(JsonFormatter::class);
+            case 'metadata':
+                $formatter = new Definition(MetadataFormatter::class);
                 break;
             default:
                 $formatter = new Reference($defaultFormatter);
         }
 
-        $handlerDefinition->addMethodCall('setFormatter', [$formatter]);
+        $handlerDefinition->addMethodCall('addFormatter', [$formatter]);
     }
 
     private function addFilters($name, array $config, Definition $handlerDefinition, ContainerBuilder $container)
@@ -142,6 +135,7 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
         foreach ($config['filters'] as $index => $filter) {
             if (is_string($filter)) {
                 $handlerDefinition->addMethodCall('addFilter', [new Reference($filter)]);
+                continue;
             }
             if (!empty($filter['name'])) {
                 $filterDefinition = $container
@@ -191,6 +185,8 @@ class ElefantPublicEventsExtension extends Extension implements PrependExtension
                                 'queue_options' => $handler['config']['queue_options'],
                                 'qos_options' => $handler['config']['qos_options'],
                                 'callback' => $handler['config']['callback'],
+                                'idle_timeout' => $handler['config']['idle_timeout'],
+                                'idle_timeout_exit_code' => $handler['config']['idle_timeout_exit_code'],
                             ]
                         ]
                     ]

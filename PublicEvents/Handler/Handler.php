@@ -5,13 +5,16 @@ namespace Elefant\PublicEventsBundle\PublicEvents\Handler;
 use Elefant\PublicEventsBundle\PublicEvents\Filter\FilterInterface;
 use Elefant\PublicEventsBundle\PublicEvents\Formatter\FormatterInterface;
 use Elefant\PublicEventsBundle\PublicEvents\PublicEvent;
+use Psr\Log\LoggerInterface;
 
 abstract class Handler implements HandlerInterface
 {
     /** @var  FilterInterface[] */
     private $filters = [];
-    /** @var  FormatterInterface */
-    private $formatter;
+    /** @var  FormatterInterface[] */
+    private $formatters = [];
+    /** @var LoggerInterface $logger */
+    protected $logger;
 
     /**
      * @param FilterInterface $filter
@@ -38,15 +41,37 @@ abstract class Handler implements HandlerInterface
         if (!$this->canHandle($event)) {
             return;
         }
-        $this->doHandle($this->formatter->format($event));
+        $serialized = $this->format($event);
+        $this->doHandle($serialized);
     }
+    
+    abstract protected function doHandle($formattedEvent);
 
-    public function setFormatter(FormatterInterface $formatter)
+    public function addFormatter(FormatterInterface $formatter)
     {
-        $this->formatter = $formatter;
+        $this->formatters[] = $formatter;
         return $this;
     }
 
-    abstract protected function doHandle($formattedEvent);
+    protected function format(PublicEvent $event)
+    {
+        $formatted = [];
 
+        foreach ($this->formatters as $formatter) {
+            $formatted = array_merge($formatted, $formatter->format($event));
+        }
+
+        return $formatted;
+    }
+
+
+    /**
+     * @param LoggerInterface $logger
+     * @return Handler
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+        return $this;
+    }
 }

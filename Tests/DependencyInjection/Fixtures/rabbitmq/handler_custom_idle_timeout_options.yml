@@ -15,3 +15,5 @@ elefant_public_events:
             type: rabbitmq
             config:
                 callback: event_dispatcher
+                idle_timeout: 10
+                idle_timeout_exit_code: 1

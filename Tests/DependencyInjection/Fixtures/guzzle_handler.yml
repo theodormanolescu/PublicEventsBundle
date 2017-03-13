@@ -2,7 +2,6 @@ imports:
     - { resource: services/event_dispatcher_and_guzzle.yml }
 
 elefant_public_events:
-    formatter: json
     handlers:
         guzzle_test:
             type: guzzle

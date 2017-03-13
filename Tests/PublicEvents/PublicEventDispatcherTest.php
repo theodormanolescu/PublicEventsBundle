@@ -25,6 +25,26 @@ class PublicEventDispatcherTest extends TestCase
         $publicEventDispatcher->dispatch('test_event', new Event());
     }
 
+    public function testPublicEventDispatcherAddsEventSource()
+    {
+        $eventDispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
+        $trace = [
+            'file' => __FILE__,
+            'line' => 45,
+            'function' => 'dispatch',
+            'class' => PublicEventDispatcher::class,
+            'type' => '->'
+        ];
+        $eventDispatcher->expects($this->at(1))
+            ->method('dispatch')
+            ->with('elefant.public_event', new PublicEvent('test_event', new Event(), $trace))
+            ->willReturn(new Event());
+
+        $publicEventDispatcher = new PublicEventDispatcher($eventDispatcher, true);
+
+        $publicEventDispatcher->dispatch('test_event', new Event());
+    }
+
     public function testPublicEventDispatcherPreservesOriginalEventDispatcher()
     {
         $listener = function () {

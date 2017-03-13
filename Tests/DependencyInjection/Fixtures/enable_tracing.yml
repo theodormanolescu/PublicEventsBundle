@@ -1,0 +1,5 @@
+imports:
+    - { resource: services/event_dispatcher.yml }
+
+elefant_public_events:
+    trace: true
